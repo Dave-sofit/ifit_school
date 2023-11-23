@@ -7,4 +7,4 @@ class Employee(ListTableWithArchive):
     __tablename__ = 'employeesList'
 
 
-Index(name='ind_user_data_gin', expressions=Employee.data, postgresql_using="gin")
+Index('ind_employee_data_gin', Employee.data, postgresql_using="gin")

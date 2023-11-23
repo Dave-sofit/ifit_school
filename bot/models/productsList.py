@@ -7,4 +7,4 @@ class Product(ListTableWithArchive):
     __tablename__ = 'productsList'
 
 
-Index(name='ind_user_data_gin', expressions=Product.data, postgresql_using="gin")
+Index('ind_product_data_gin', Product.data, postgresql_using="gin")
