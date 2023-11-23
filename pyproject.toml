@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "ifit"
+version = "0.1.0"
+description = ""
+authors = ["dave <d@sofit.pw>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+httpx = "^0.25.1"
+aiogram = "^3.1.1"
+redis = "^5.0.1"
+sqlalchemy = "^2.0.23"
+pydantic-settings = "^2.1.0"
+asyncpg = "^0.29.0"
+sqlalchemy-utils = "^0.41.1"
+geoalchemy2 = "^0.14.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
