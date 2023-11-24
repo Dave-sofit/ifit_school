@@ -1,3 +1,4 @@
+from bot.models.utils import BaseTable
 from bot.models.usersList import User
 from bot.models.employeesList import Employee
 from bot.models.productsList import Product
