@@ -18,3 +18,11 @@ class UserMng(ServiceObjectBase):
 
     async def getList(self, queryParams: UserQueryParamFields = None, order_by: dict | None = None, **kwargs) -> List[UserOut]:
         return await super().getList(queryParams=queryParams, query=None, order_by=order_by, **kwargs)
+
+    async def first(self, queryParams: QueryParamFields = None, **kwargs) -> UserOut:
+        query = None
+        for k, v in kwargs.items():
+            if k == 'phone':
+                query = await self.ClsDB.addFilterToJsonb(query=query, attr=self.ClsDB.data, attrName='phone', attrValue=v)
+
+        return await super().first(queryParams=queryParams, query=query)

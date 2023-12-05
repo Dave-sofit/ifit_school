@@ -213,6 +213,14 @@ class ServiceObjectBase(metaclass=ABCMeta):
         receiveItems = [await self._receiveResult(i) for i in items]
         return receiveItems
 
+    async def first(self, queryParams: QueryParamFields = None, query: select = None, **kwargs):
+        await self.commonHandler(queryParams=queryParams)
+        objsDB = await self.ClsDB.filter(query=query, **kwargs)
+        if len(objsDB) > 0:
+            return await self._receiveResult(objsDB[0])
+        else:
+            return None
+
     async def delete(self, objectIn: BaseModel = None, objectDB=None, **kwargs) -> None:
         await self.updateByObjectIn(objectIn, kwargs)
 
