@@ -7,14 +7,16 @@ from aiogram.fsm.storage.redis import RedisStorage
 from .config import settings
 from .common.dependencies import setSession
 
-# from .handlers import register_handlers_common, register_handlers_event, register_handlers_master, register_handlers_schedule
+# from .handlers import register_handlers_common,
+# register_handlers_event, register_handlers_master, register_handlers_schedule
 from bot.handlers.common import router as commonRouter
 from bot.handlers.courses import router as coursesRouter
 
 logger = logging.getLogger(__name__)
 
 # Настройка логирования в stdout
-logging.basicConfig(filename='bot.log', level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+logging.basicConfig(filename='bot.log', level=logging.ERROR,
+                    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 logger.info("Starting bot")
 
 storage = RedisStorage.from_url(url=settings.REDIS_URI, connection_kwargs={'password': settings.REDIS_PASSWORD})
