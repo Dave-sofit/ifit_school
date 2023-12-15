@@ -5,6 +5,9 @@ from bot.serviceObjects.utils import UuidBase, QueryParamFields, SchemaDB
 
 class ProductBase(BaseModel):
     name: str
+    descriptions: str
+    content: str
+    certificate: str
     crmId: str
 
 
