@@ -18,4 +18,4 @@ class ProductMng(ServiceObjectBase):
         return await super().get(objectDB=objectDB, queryParams=queryParams, **kwargs)
 
     async def getList(self, queryParams: QueryParamFields = None, order_by: dict = None, **kwargs) -> List[ProductOut]:
-        return await super().getList(queryParams=queryParams, query=None, order_by=order_by, **kwargs)
+        return await super().getList(queryParams=queryParams, order_by=order_by, **kwargs)

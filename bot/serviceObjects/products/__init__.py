@@ -8,7 +8,6 @@ class ProductBase(BaseModel):
     descriptions: str
     content: str
     certificate: str
-    crmId: str
 
 
 class ProductIn(ProductBase):
@@ -26,7 +25,9 @@ class ProductQueryParamFields(QueryParamFields):
 
 class ProductData(BaseModel):
     name: str
-    crmId: str
+    descriptions: str
+    content: str
+    certificate: str
 
 
 class ProductDataT(BaseModel):
