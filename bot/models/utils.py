@@ -1,9 +1,10 @@
 from datetime import datetime
 from uuid import uuid4, UUID
-from typing import Any
+from typing import Any, Sequence
 
 from geoalchemy2.functions import GenericFunction
-from sqlalchemy import Column, Boolean, PrimaryKeyConstraint, BigInteger, MetaData, TIMESTAMP, String, ForeignKey, Identity
+from sqlalchemy import Column, Boolean, PrimaryKeyConstraint, BigInteger, MetaData, TIMESTAMP, String, ForeignKey, \
+    Identity, RowMapping, Row
 from sqlalchemy import insert, update, delete, bindparam
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine.result import ChunkedIteratorResult
@@ -123,7 +124,9 @@ class BaseTable(Base):
     # TODO хорошо бы причесать вызовы, in list убрать и интегрировать в другие
     #  пытаюсь сделать общий интегрированный фильтр, будет поддерживать where field = p1 and field1 in l1
     @classmethod
-    async def filter(cls, query: select = None, order_by: dict | None = None, **kwargs) -> list:
+    async def filter(cls, query: select = None, order_by: dict | None = None, **kwargs) -> Sequence[
+        Row | RowMapping | Any]:
+
         selectRow = kwargs.pop('selectRow', False)
         parameters = {}
 
@@ -133,14 +136,6 @@ class BaseTable(Base):
         for k, v in kwargs.items():
             if isinstance(v, list):
                 query = query.where(cls._getattrFromColumnName(k).in_(v))
-
-            # todo serg Заремил, так как из-за оператора "->"  не будет использоваться индекс,
-            #  нужно уйти от него конструируя словарь из ключей и значений,
-            #  но, так как нет уверенности, что этот сценарий используется, пока заремил
-            # elif isinstance(v, dict):
-            #     for key, value in v.items():
-            #         if value is not None:
-            #             query = query.where(cls.__getattribute__(cls, k).op('->')(key).op('@>')(value))
             elif isinstance(v, GenericFunction):
                 query = query.where(v)
             else:
@@ -149,9 +144,6 @@ class BaseTable(Base):
         for k, v in cls.prepareFilter(**parameters, noRestriction=True).items():
             if hasattr(cls, k):
                 query = query.filter(getattr(cls, k).__eq__(v))
-
-        # if isinstance(cls, WithUID):
-        #     query = query.filter(getattr(cls, 'uid').__ne__(emptyRef))
 
         if order_by is not None:
             for k, v in order_by.items():
@@ -194,7 +186,8 @@ class BaseTable(Base):
         return filter_by
 
     @classmethod
-    async def addFilterToJsonb(cls, attr: QueryableAttribute, attrName: str, attrValue: Any, query: select = None) -> select:
+    async def addFilterToJsonb(cls, attr: QueryableAttribute, attrName: str, attrValue: Any,
+                               query: select = None) -> select:
         if query is None:
             query = select(cls)
 
