@@ -178,7 +178,8 @@ class ServiceObjectBase(metaclass=ABCMeta):
             await self._get(**pk)
         return await self._receiveResult()
 
-    async def createObjects(self, objList: List[BaseModel], notCommit: bool = False) -> tuple[BaseModel | BaseTable | None]:
+    async def createObjects(self, objList: List[BaseModel], notCommit: bool = False) -> tuple[
+        BaseModel | BaseTable | None]:
         if len(objList) > 0:
             objectsDB = tuple(await self._to_orm(obj) for obj in objList)
             await self.ClsDB.add_all(objectsDB, notCommit)
@@ -207,9 +208,10 @@ class ServiceObjectBase(metaclass=ABCMeta):
         await self._get(objectDB, noneable=noneable, **kwargs)
         return await self._receiveResult()
 
-    async def getList(self, queryParams: QueryParamFields = None, query: select = None, order_by: dict | None = None, **kwargs):
+    async def getList(self, queryParams: QueryParamFields = None, query: select = None, order_by: dict | None = None,
+                      **kwargs) -> List[BaseModel]:
         await self.commonHandler(queryParams=queryParams)
-        items, total = await self.ClsDB.filter(query, order_by, **kwargs)
+        items = await self.ClsDB.filter(query, order_by, **kwargs)
         receiveItems = [await self._receiveResult(i) for i in items]
         return receiveItems
 
