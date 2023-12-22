@@ -25,7 +25,7 @@ setSession()
 
 async def main():
     # Объявление и инициализация объектов бота и диспетчера
-    bot = Bot(token=settings.BOT_TOKEN)
+    bot = Bot(token=settings.BOT_TOKEN, parse_mode="HTML")
     dp = Dispatcher(storage=storage)
     dp.include_routers(commonRouter)
     dp.include_routers(coursesRouter)
