@@ -6,7 +6,7 @@ from bot.serviceObjects.utils import UuidBase, QueryParamFields, SchemaDB
 class EmployeeBase(BaseModel):
     firstName: str
     lastName: str
-    description: str
+    descriptions: str
 
 
 class EmployeeIn(EmployeeBase):
@@ -25,7 +25,7 @@ class EmployeeQueryParamFields(QueryParamFields):
 class EmployeeData(BaseModel):
     firstName: str
     lastName: str
-    description: str
+    descriptions: str
 
 
 class EmployeeDataT(BaseModel):
