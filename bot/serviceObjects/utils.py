@@ -209,7 +209,7 @@ class ServiceObjectBase(metaclass=ABCMeta):
         return await self._receiveResult()
 
     async def getList(self, queryParams: QueryParamFields = None, query: select = None, order_by: dict | None = None,
-                      **kwargs) -> List[BaseModel]:
+                      **kwargs) -> List[Any]:
         await self.commonHandler(queryParams=queryParams)
         items = await self.ClsDB.filter(query, order_by, **kwargs)
         receiveItems = [await self._receiveResult(i) for i in items]
