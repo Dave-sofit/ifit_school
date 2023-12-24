@@ -6,7 +6,7 @@ from bot.serviceObjects.employees import EmployeeIn, EmployeeOut, EmployeeSchema
 from bot.serviceObjects.utils import ServiceObjectBase
 
 
-class ProductMng(ServiceObjectBase):
+class EmployeeMng(ServiceObjectBase):
     ClsDB = EmployeeDB
     Cls = EmployeeOut
     SchemaDB = EmployeeSchemaDB
