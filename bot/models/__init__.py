@@ -7,5 +7,6 @@ from bot.models.productsFAQInfoRg import ProductFAQ
 from bot.models.coursesList import Course
 from bot.models.coursesApplicationsInfoRg import CourseApplication
 from bot.models.coursesParticipantsInfoRg import CourseParticipant
+from bot.models.coursesScheduleInfoRg import CourseSchedule
 from bot.models.settlementsInfoRg import Settlement
 from bot.models.paymentsInfoRg import Payments
