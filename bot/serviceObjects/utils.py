@@ -142,6 +142,11 @@ class ServiceObjectBase(metaclass=ABCMeta):
                 objDict[attr] = await self._getObjDbDict(objAttr)
             elif isinstance(objAttr, WKBElement) or isinstance(objAttr, WKTElement):
                 objDict[attr] = decodeGeoData(objAttr)
+            if isinstance(objAttr, List):
+                objAttrList = []
+                for item in objAttr:
+                    objAttrList.append(await self._getObjDbDict(item))
+                objDict[attr] = objAttrList
             else:
                 objDict[attr] = objAttr
 
@@ -173,13 +178,13 @@ class ServiceObjectBase(metaclass=ABCMeta):
         self._objectDB = await self._to_orm(obj)
         await self._objectDB.add(notCommit)
         await self._objectDB.commit(notCommit)
-        if not notCommit:  # если не закоммитили, то и получать из базы нечего
+        if not notCommit:
             pk = await self._getObjPK(self._objectDB)
             await self._get(**pk)
         return await self._receiveResult()
 
     async def createObjects(self, objList: List[BaseModel], notCommit: bool = False) -> tuple[
-        BaseModel | BaseTable | None]:
+        BaseModel | BaseTable | None, ...]:
         if len(objList) > 0:
             objectsDB = tuple(await self._to_orm(obj) for obj in objList)
             await self.ClsDB.add_all(objectsDB, notCommit)
