@@ -8,6 +8,7 @@ class ProductBase(BaseModel):
     descriptions: str
     content: str
     certificate: str
+    order: int = 0
 
 
 class ProductIn(ProductBase):
@@ -28,6 +29,7 @@ class ProductData(BaseModel):
     descriptions: str
     content: str
     certificate: str
+    order: str
 
 
 class ProductDataT(BaseModel):
