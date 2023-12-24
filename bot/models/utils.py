@@ -136,6 +136,8 @@ class BaseTable(Base):
         for k, v in kwargs.items():
             if isinstance(v, list):
                 query = query.where(cls._getattrFromColumnName(k).in_(v))
+            elif isinstance(v, dict):
+                query = query.where(cls.__getattribute__(cls, k).op('@>')(v))
             elif isinstance(v, GenericFunction):
                 query = query.where(v)
             else:
