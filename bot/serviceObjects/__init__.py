@@ -7,4 +7,4 @@ from bot.serviceObjects.employees.manager import EmployeeMng
 from bot.serviceObjects.products import ProductOut, ProductIn
 from bot.serviceObjects.products.manager import ProductMng
 from bot.serviceObjects.courses import CourseOut, CourseIn
-from bot.serviceObjects.courses.manager import CourseMng
+from bot.serviceObjects.courses.manager import CourseMng, CourseScheduleMng
