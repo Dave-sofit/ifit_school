@@ -1,5 +1,7 @@
 from uuid import UUID
 from typing import List
+from datetime import datetime
+
 from pydantic import BaseModel
 
 from bot.serviceObjects.utils import UuidBase, QueryParamFields, SchemaDB
@@ -13,6 +15,7 @@ class CourseBase(BaseModel):
     descriptions: str | None = ''
     exam: str | None = ''
     location: str | None = ''
+    crmId: str
 
 
 class CourseIn(CourseBase):
@@ -38,6 +41,7 @@ class CourseData(BaseModel):
     descriptions: str
     exam: str
     location: str
+    crmId: str
 
 
 class CourseDataT(BaseModel):
@@ -47,3 +51,21 @@ class CourseDataT(BaseModel):
 class CourseSchemaDB(SchemaDB):
     data: CourseData
     dataT: CourseDataT
+
+
+class CourseScheduleBase(BaseModel):
+    courseUid: UUID
+    startDate: datetime
+
+
+class CourseScheduleIn(CourseScheduleBase):
+    pass
+
+
+class CourseScheduleOut(CourseScheduleBase):
+    class Config:
+        from_attributes = True
+
+
+class CourseScheduleQueryParamFields(QueryParamFields):
+    pass
