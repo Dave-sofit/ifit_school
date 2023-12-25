@@ -1,23 +1,17 @@
 from json import loads
 from aiogram import Router, F
-from aiogram.types import Message, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.types import Message, KeyboardButton, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 
-from bot.serviceObjects import ProductMng, CourseMng
+from bot.common import InformingState, MessengerTypes
+from bot.serviceObjects import ProductMng, CourseMng, CourseScheduleMng, UserMessengerMng, UserMng, UserIn, \
+    UserMessengerIn
 from bot.engine import cache
 
 from bot.handlers.utils import updateUserCache, addBaseCommands
 
 router = Router()
-
-
-class AuthState(StatesGroup):
-    waitingProduct = State()
-    waitingAction = State()
-    waitingPlace = State()
-    waitingDetails = State()
 
 
 async def getProducts(message: Message, state: FSMContext) -> Message:
@@ -32,7 +26,7 @@ async def getProducts(message: Message, state: FSMContext) -> Message:
 
     builder.add(KeyboardButton(text='Повернутися назад'))
     builder.adjust(2)
-    await state.set_state(AuthState.waitingProduct)
+    await state.set_state(InformingState.waitingProduct)
     reply_markup = builder.as_markup(resize_keyboard=True)
     return await message.answer(text='Обери курс', reply_markup=reply_markup)
 
@@ -46,7 +40,7 @@ async def setProduct(message: Message, state: FSMContext, text: str) -> Message:
     builder.add(KeyboardButton(text='Повернутись до вибору курсів'))
     builder.adjust(2)
 
-    await state.set_state(AuthState.waitingAction)
+    await state.set_state(InformingState.waitingAction)
     reply_markup = builder.as_markup(resize_keyboard=True)
     return await message.answer(text=text, reply_markup=reply_markup)
 
@@ -63,34 +57,48 @@ async def getCourses(message: Message, state: FSMContext, userCache: str) -> Mes
 
     builder.add(KeyboardButton(text='Повернутись до курсу'))
     builder.adjust(2)
-    await state.set_state(AuthState.waitingPlace)
+    await state.set_state(InformingState.waitingPlace)
     return await message.answer(text='Вибери місто', reply_markup=builder.as_markup(resize_keyboard=True))
 
 
 async def setDetail(message: Message, state: FSMContext, course: dict) -> Message:
     employees = course.get('employees')
-    textEmployees = '<b><u>Викладачі</u></b>\n'
+    textEmployees = '<b><u>Викладачі:</u></b>\n'
     for employee in employees:
         fullName = employee.get('fullName')
         textEmployees += f'{fullName}\n'
 
     location = course.get('location')
-    textLocation = f'<b><u>Адреса</u></b>\n{location}\n'
+    textLocation = f'<b><u>Адреса:</u></b>\n{location}\n'
 
     price = course.get('price')
-    textPrice = f'Вартість, грн: {price}\n'
+    textPrice = f'<b><u>Вартість</u></b>: {price} грн\n'
 
+    textSchedule = '<b><u>Розклад:</u></b>\n'
+
+    courseSchedule = await CourseScheduleMng().getList(**{'courseUid': course.get('uid')})
+    builder = InlineKeyboardBuilder()
+    for row in courseSchedule:
+        startDate = row.startDate.strftime('%d-%m-%Y')
+        builder.add(InlineKeyboardButton(text=f'{startDate}', callback_data=f'select_date_{row.startDate}'))
+
+    builder.adjust(2)
+    await message.answer(text=f'{textEmployees}\n{textLocation}\n{textPrice}\n{textSchedule}\nЗаписатися на курс з',
+                         reply_markup=builder.as_markup(resize_keyboard=True))
+
+    await state.set_state(InformingState.waitingDetails)
+    reply_markup = await addDetailsCommands()
+    return await message.answer(text=f'Вибери дію', reply_markup=reply_markup)
+
+
+async def addDetailsCommands() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
     builder.add(KeyboardButton(text='Основне'))
     builder.add(KeyboardButton(text='Навчальний процес'))
     builder.add(KeyboardButton(text='Iспит та акредитація'))
     builder.add(KeyboardButton(text='Повернутись до вибору місто'))
     builder.adjust(2)
-
-    await state.set_state(AuthState.waitingDetails)
-    reply_markup = builder.as_markup(resize_keyboard=True)
-
-    return await message.answer(text=f'{textEmployees}\n{textLocation}\n{textPrice}', reply_markup=reply_markup)
+    return builder.as_markup(resize_keyboard=True)
 
 
 @router.message(F.text == 'Базові курси навчання')
@@ -98,13 +106,13 @@ async def cmdProducts(message: Message, state: FSMContext) -> None:
     await getProducts(message=message, state=state)
 
 
-@router.message(AuthState.waitingProduct, F.text == 'Повернутися назад')
+@router.message(InformingState.waitingProduct, F.text == 'Повернутися назад')
 async def cmdSetProduct(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer(text='Вибери дію', reply_markup=await addBaseCommands())
 
 
-@router.message(AuthState.waitingProduct)
+@router.message(InformingState.waitingProduct)
 async def cmdSetProduct(message: Message, state: FSMContext) -> None:
     if len(message.text) > 2:
         value = await cache.get(message.text[:2])
@@ -115,24 +123,24 @@ async def cmdSetProduct(message: Message, state: FSMContext) -> None:
             await setProduct(message=message, state=state, text=text)
 
 
-@router.message(AuthState.waitingAction, F.text == 'Повернутись до вибору курсів')
+@router.message(InformingState.waitingAction, F.text == 'Повернутись до вибору курсів')
 async def cmdAction(message: Message, state: FSMContext) -> None:
     await getProducts(message=message, state=state)
 
 
-@router.message(AuthState.waitingPlace, F.text == 'Повернутись до курсу')
+@router.message(InformingState.waitingPlace, F.text == 'Повернутись до курсу')
 async def cmdDetails(message: Message, state: FSMContext) -> None:
     await setProduct(message=message, state=state, text='Вибери дію')
 
 
-@router.message(AuthState.waitingDetails, F.text == 'Повернутись до вибору місто')
+@router.message(InformingState.waitingDetails, F.text == 'Повернутись до вибору місто')
 async def cmdDetails(message: Message, state: FSMContext) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
         await getCourses(message=message, state=state, userCache=value)
 
 
-@router.message(AuthState.waitingAction, F.text == 'Опис курсу')
+@router.message(InformingState.waitingAction, F.text == 'Опис курсу')
 async def cmdAction(message: Message) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
@@ -140,7 +148,7 @@ async def cmdAction(message: Message) -> None:
         await message.answer(text=product.get('descriptions'))
 
 
-@router.message(AuthState.waitingAction, F.text == 'Програма курсу')
+@router.message(InformingState.waitingAction, F.text == 'Програма курсу')
 async def cmdAction(message: Message) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
@@ -148,7 +156,7 @@ async def cmdAction(message: Message) -> None:
         await message.answer(text=product.get('content'))
 
 
-@router.message(AuthState.waitingAction, F.text == 'Сертифікат')
+@router.message(InformingState.waitingAction, F.text == 'Сертифікат')
 async def cmdAction(message: Message) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
@@ -156,14 +164,14 @@ async def cmdAction(message: Message) -> None:
         await message.answer(text=product.get('certificate'))
 
 
-@router.message(AuthState.waitingAction, F.text == 'Як проходить навчання')
+@router.message(InformingState.waitingAction, F.text == 'Як проходить навчання')
 async def cmdAction(message: Message, state: FSMContext) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
         await getCourses(message=message, state=state, userCache=value)
 
 
-@router.message(AuthState.waitingPlace)
+@router.message(InformingState.waitingPlace)
 async def cmdSetDetail(message: Message, state: FSMContext) -> None:
     if len(message.text) > 3:
         value = await cache.get(message.text[:3])
@@ -173,7 +181,7 @@ async def cmdSetDetail(message: Message, state: FSMContext) -> None:
             await setDetail(message=message, state=state, course=course)
 
 
-@router.message(AuthState.waitingDetails, F.text == 'Основне')
+@router.message(InformingState.waitingDetails, F.text == 'Основне')
 async def cmdAction(message: Message, state: FSMContext) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
@@ -181,7 +189,7 @@ async def cmdAction(message: Message, state: FSMContext) -> None:
         await setDetail(message=message, state=state, course=course)
 
 
-@router.message(AuthState.waitingDetails, F.text == 'Навчальний процес')
+@router.message(InformingState.waitingDetails, F.text == 'Навчальний процес')
 async def cmdAction(message: Message) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
@@ -190,10 +198,47 @@ async def cmdAction(message: Message) -> None:
         await message.answer(text=f'<b><u>Навчальний процес</u></b>\n{section}')
 
 
-@router.message(AuthState.waitingDetails, F.text == 'Iспит та акредитація')
+@router.message(InformingState.waitingDetails, F.text == 'Iспит та акредитація')
 async def cmdAction(message: Message) -> None:
     value = await cache.get(message.from_user.id)
     if value is not None:
         course = loads(value).get('course')
         section = course.get('exam')
         await message.answer(text=f'<b><u>Iспит та акредитація</u></b>\n{section}')
+
+
+@router.callback_query(F.data.startswith('select_date_'))
+async def callbacksSelectDate(callback: CallbackQuery) -> None:
+    userMessenger = await UserMessengerMng().get(userMessengerId=callback.from_user.id, noneable=True)
+    if userMessenger is None:
+        kbButton = [KeyboardButton(text='Надіслати контакт', request_contact=True)]
+        reply_markup = ReplyKeyboardMarkup(keyboard=[kbButton], resize_keyboard=True, one_time_keyboard=True)
+        await callback.message.answer(text='Представтеся', reply_markup=reply_markup)
+        await callback.answer()
+    else:
+        date = callback.data.split('_')[-1]
+        await callback.answer(text=f'вы записаны на {date}', show_alert=True)
+
+
+@router.message(F.contact)
+async def cmdSetContact(message: Message) -> None:
+    contact = message.contact
+    if contact is not None and message.from_user.id == contact.user_id:
+        phone = contact.phone_number.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ',
+                                                                                                                 '')
+        user = await UserMng().first(phone=phone)
+        if user is None:
+            user = await UserMng().create(UserIn(firstName=contact.first_name, phone=phone))
+
+        userMessenger = await UserMessengerMng().get(userMessengerId=contact.user_id, noneable=True)
+        if userMessenger is None:
+            await UserMessengerMng().create(
+                UserMessengerIn(userMessengerId=contact.user_id, type=MessengerTypes.telegram,
+                                userUid=user.uid))
+
+        await message.answer(text=f'{message.from_user.first_name} номер отриманий, дякую',
+                             reply_markup=(await addBaseCommands()))
+    else:
+        await message.answer(text=f'{message.from_user.first_name} це не ваш номер')
+
+    await message.answer(text=f'Повторіть спробу запису на курс', reply_markup=await addDetailsCommands())
