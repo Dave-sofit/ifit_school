@@ -17,7 +17,6 @@ async def cmdStart(message: Message, state: FSMContext) -> None:
                          reply_markup=await addBaseCommands())
 
 
-@router.message(StateFilter(None), Command("cancel"))
+@router.message(Command("help"))
 async def cmdCancel(message: Message, state: FSMContext) -> None:
-    await state.clear()
-    await message.answer('Действие отменено', reply_markup=await addBaseCommands())
+    await message.answer('Якщо раптом зникли кнопки, то натисніть на цю іконку &#127899;')
