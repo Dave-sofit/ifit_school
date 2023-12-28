@@ -22,6 +22,11 @@ async def addCancelCommand():
 
 
 async def updateUserCache(user, value: dict) -> None:
-    userCacheDict = loads(await cache.get(user))
+    userCache = await cache.get(user)
+    if userCache is None:
+        userCacheDict = {}
+    else:
+        userCacheDict = loads(userCache)
+
     userCacheDict.update(value)
     await cache.set(user, dumps(userCacheDict))
