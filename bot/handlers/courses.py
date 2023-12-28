@@ -27,7 +27,7 @@ async def getProducts(message: Message, state: FSMContext) -> Message:
     builder.add(KeyboardButton(text='Повернутися назад'))
     builder.adjust(2)
     await state.set_state(InformingState.waitingProduct)
-    reply_markup = builder.as_markup(resize_keyboard=True)
+    reply_markup = builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
     return await message.answer(text='Обери курс', reply_markup=reply_markup)
 
 
@@ -41,7 +41,7 @@ async def setProduct(message: Message, state: FSMContext, text: str) -> Message:
     builder.adjust(2)
 
     await state.set_state(InformingState.waitingAction)
-    reply_markup = builder.as_markup(resize_keyboard=True)
+    reply_markup = builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
     return await message.answer(text=text, reply_markup=reply_markup)
 
 
@@ -58,7 +58,8 @@ async def getCourses(message: Message, state: FSMContext, userCache: str) -> Mes
     builder.add(KeyboardButton(text='Повернутись до курсу'))
     builder.adjust(2)
     await state.set_state(InformingState.waitingPlace)
-    return await message.answer(text='Вибери місто', reply_markup=builder.as_markup(resize_keyboard=True))
+    return await message.answer(text='Вибери місто',
+                                reply_markup=builder.as_markup(resize_keyboard=True, one_time_keyboard=False))
 
 
 async def setDetail(message: Message, state: FSMContext, course: dict) -> Message:
@@ -98,7 +99,7 @@ async def addDetailsCommands() -> ReplyKeyboardMarkup:
     builder.add(KeyboardButton(text='Iспит та акредитація'))
     builder.add(KeyboardButton(text='Повернутись до вибору місто'))
     builder.adjust(2)
-    return builder.as_markup(resize_keyboard=True)
+    return builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
 
 
 @router.message(F.text == 'Базові курси навчання')

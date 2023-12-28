@@ -13,7 +13,7 @@ async def addBaseCommands() -> ReplyKeyboardMarkup:
     builder.add(KeyboardButton(text='Мої дані'))
     builder.adjust(2)
 
-    return builder.as_markup(resize_keyboard=True)
+    return builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
 
 
 async def addCancelCommand():
