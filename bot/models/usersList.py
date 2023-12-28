@@ -5,7 +5,6 @@ from bot.models.utils import ListTableWithArchive
 
 class User(ListTableWithArchive):
     __tablename__ = 'usersList'
-    startDate = Column(TIMESTAMP())
 
 
 Index('ind_user_data_gin', User.data, postgresql_using="gin")

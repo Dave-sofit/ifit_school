@@ -218,7 +218,6 @@ class Translated(BaseTable):
 class WithCreating(BaseTable):
     __abstract__ = True
     createdOn = Column(TIMESTAMP(), default=datetime.utcnow)
-    creatorUid = Column(UUIDType())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
