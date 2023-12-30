@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     REDIS_URI: str
     REDIS_PASSWORD: str
     DEFAULT_CONTENT_LANGUAGE: str
+    CRM_URL: str
+    CRM_TOKEN: str
 
     class Config:
         env_file = envPath

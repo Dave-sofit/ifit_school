@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from bot.serviceObjects.utils import UuidBase, QueryParamFields, SchemaDB
 from bot.serviceObjects.employees import EmployeeOut
+from bot.serviceObjects.users import UserOut
 
 
 class CourseBase(BaseModel):
@@ -68,4 +69,26 @@ class CourseScheduleOut(CourseScheduleBase):
 
 
 class CourseScheduleQueryParamFields(QueryParamFields):
+    pass
+
+
+class CourseApplicationBase(BaseModel):
+    courseUid: UUID
+    userUid: UUID
+    startDate: datetime
+
+
+class CourseApplicationIn(CourseApplicationBase):
+    pass
+
+
+class CourseApplicationOut(CourseApplicationBase):
+    course: CourseOut
+    user: UserOut
+
+    class Config:
+        from_attributes = True
+
+
+class CourseApplicationQueryParamFields(QueryParamFields):
     pass

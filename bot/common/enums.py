@@ -11,3 +11,15 @@ class MessengerTypes(str, UtilEnum):
     telegram = 'telegram'
     viber = 'viber'
     whatsapp = 'whatsapp'
+
+
+class RequestTypes(str, UtilEnum):
+    GET = 'GET'
+    POST = 'POST'
+    HEAD = 'HEAD'
+    PUT = 'PUT'
+    DELETE = 'DELETE'
+    CONNECT = 'CONNECT'
+    OPTIONS = 'OPTIONS'
+    TRACE = 'TRACE'
+    PATCH = 'PATCH'

@@ -1,8 +1,10 @@
 from typing import List
 
-from bot.models import Course as CourseDB, CourseSchedule as CourseScheduleDB
-from bot.serviceObjects.courses import CourseIn, CourseOut, CourseSchemaDB, CourseScheduleOut, \
-    CourseQueryParamFields as QueryParamFields, CourseScheduleQueryParamFields
+from bot.models import Course as CourseDB, CourseSchedule as CourseScheduleDB, CourseApplication as CourseApplicationDB
+from bot.serviceObjects.courses import CourseIn, CourseOut, CourseSchemaDB, CourseQueryParamFields as QueryParamFields
+from bot.serviceObjects.courses import CourseScheduleIn, CourseScheduleOut, CourseScheduleQueryParamFields
+from bot.serviceObjects.courses import CourseApplicationIn, CourseApplicationOut, CourseApplicationQueryParamFields
+
 from bot.serviceObjects.utils import ServiceObjectBase
 
 
@@ -26,7 +28,7 @@ class CourseScheduleMng(ServiceObjectBase):
     Cls = CourseScheduleOut
     pkey = ['courseUid', 'startDate']
 
-    async def create(self, obj: CourseIn = None, notCommit: bool = False) -> CourseScheduleOut:
+    async def create(self, obj: CourseScheduleIn = None, notCommit: bool = False) -> CourseScheduleOut:
         return await super().create(obj=obj, notCommit=notCommit)
 
     async def get(self, objectDB=None, queryParams: CourseScheduleQueryParamFields = None,
@@ -34,5 +36,22 @@ class CourseScheduleMng(ServiceObjectBase):
         return await super().get(objectDB=objectDB, queryParams=queryParams, **kwargs)
 
     async def getList(self, queryParams: CourseScheduleQueryParamFields = None, order_by: dict = None, **kwargs) -> \
-        List[CourseScheduleOut]:
+            List[CourseScheduleOut]:
+        return await super().getList(queryParams=queryParams, order_by=order_by, **kwargs)
+
+
+class CourseApplicationMng(ServiceObjectBase):
+    ClsDB = CourseApplicationDB
+    Cls = CourseApplicationOut
+    pkey = ['courseUid', 'userUid', 'startDate']
+
+    async def create(self, obj: CourseApplicationIn = None, notCommit: bool = False) -> CourseApplicationOut:
+        return await super().create(obj=obj, notCommit=notCommit)
+
+    async def get(self, objectDB=None, queryParams: CourseApplicationQueryParamFields = None,
+                  **kwargs) -> CourseApplicationOut:
+        return await super().get(objectDB=objectDB, queryParams=queryParams, **kwargs)
+
+    async def getList(self, queryParams: CourseApplicationQueryParamFields = None, order_by: dict = None, **kwargs) -> \
+            List[CourseApplicationOut]:
         return await super().getList(queryParams=queryParams, order_by=order_by, **kwargs)

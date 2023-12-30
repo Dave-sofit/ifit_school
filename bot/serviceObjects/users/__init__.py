@@ -6,6 +6,7 @@ from bot.serviceObjects.utils import UuidBase, QueryParamFields, SchemaDB
 
 class UserBase(BaseModel):
     phone: str
+    messengerId: int
     firstName: str | None = None
     lastName: str | None = None
     secondName: str | None = None
@@ -29,6 +30,7 @@ class UserQueryParamFields(QueryParamFields):
 
 class UserData(BaseModel):
     phone: str
+    messengerId: int
     firstName: str
     lastName: str
     secondName: str
