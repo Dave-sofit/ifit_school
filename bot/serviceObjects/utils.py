@@ -142,7 +142,7 @@ class ServiceObjectBase(metaclass=ABCMeta):
                 objDict[attr] = await self._getObjDbDict(objAttr)
             elif isinstance(objAttr, WKBElement) or isinstance(objAttr, WKTElement):
                 objDict[attr] = decodeGeoData(objAttr)
-            if isinstance(objAttr, List):
+            elif isinstance(objAttr, List):
                 objAttrList = []
                 for item in objAttr:
                     objAttrList.append(await self._getObjDbDict(item))
