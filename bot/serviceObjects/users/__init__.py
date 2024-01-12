@@ -13,6 +13,7 @@ class UserBase(BaseModel):
     nameEnglish: str | None = None
     birthday: date | None = None
     city: str | None = None
+    crmId: str | None = None
 
 
 class UserIn(UserBase):
