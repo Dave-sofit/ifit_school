@@ -8,8 +8,7 @@ from aiogram.fsm.context import FSMContext
 from httpx import codes
 
 from bot.common import InformingState
-from bot.serviceObjects import ProductMng, CourseMng, CourseScheduleMng, CourseApplicationIn, CourseApplicationMng, \
-    UserMng, UserIn
+from bot.serviceObjects import ProductMng, CourseMng, CourseScheduleMng, CourseApplicationIn, CourseApplicationMng
 from bot.serviceObjects.crmConnector import Order, SenderOrder
 from bot.engine import cache
 from bot.handlers.utils import updateUserCache, addBaseCommands
@@ -213,49 +212,22 @@ async def cmdAction(message: Message) -> None:
 
 @router.callback_query(F.data.startswith('select_date_'))
 async def callbacksSelectDate(callback: CallbackQuery) -> None:
-    user = await UserMng().get(userMessengerId=callback.from_user.id, noneable=True)
-    if user is None:
-        kbButton = [KeyboardButton(text='Надіслати контакт', request_contact=True)]
-        reply_markup = ReplyKeyboardMarkup(keyboard=[kbButton], resize_keyboard=True, one_time_keyboard=True)
-        await callback.message.answer(text='Представтеся', reply_markup=reply_markup)
+    dateStr = callback.data.split('_')[-1]
+    date = datetime.strptime(dateStr, '%d-%m-%Y')
+    value = await cache.get(callback.from_user.id)
+    if value is not None:
+        user = loads(value).get('user')
+        course = loads(value).get('course')
+        productName = loads(value).get('product').get('name')
+        courseApplication = await CourseApplicationMng().create(
+            CourseApplicationIn(userUid=user.get('uid'), courseUid=course.get('uid'), startDate=date))
+
+        order = Order(user=courseApplication.user, course=courseApplication.course, startDate=date)
+        response = await SenderOrder.sendToCrm(obj=order)
+
+        if response.status_code == codes.OK:
+            await callback.message.answer(text=f'Вашу заявку на курс {productName} / {dateStr} зареєстровано')
+        else:
+            await callback.message.answer(text=f'Не вдалося залишити заявку на курс {productName} / {dateStr}')
+
         await callback.answer()
-    else:
-        dateStr = callback.data.split('_')[-1]
-        date = datetime.strptime(dateStr, '%d-%m-%Y')
-        value = await cache.get(callback.from_user.id)
-        if value is not None:
-            course = loads(value).get('course')
-            productName = loads(value).get('product').get('name')
-            courseApplication = await CourseApplicationMng().create(
-                CourseApplicationIn(userUid=user.uid, courseUid=course.get('uid'), startDate=date))
-
-            order = Order(user=courseApplication.user, course=courseApplication.course, startDate=date)
-            response = await SenderOrder.sendToCrm(obj=order)
-
-            if response.status_code == codes.OK:
-                await callback.message.answer(text=f'Вашу заявку на курс {productName} / {dateStr} зареєстровано')
-            else:
-                await callback.message.answer(text=f'Не вдалося залишити заявку на курс {productName} / {dateStr}')
-
-            await callback.answer()
-
-
-@router.message(F.contact)
-async def cmdSetContact(message: Message) -> None:
-    contact = message.contact
-    if contact is not None and message.from_user.id == contact.user_id:
-        phone = contact.phone_number.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ',
-                                                                                                                 '')
-        user = await UserMng().first(phone=phone)
-        if user is None:
-            user = await UserMng().create(
-                UserIn(firstName=contact.first_name, phone=phone, messengerId=contact.user_id))
-
-        await message.answer(text=f'{message.from_user.first_name} номер отриманий, дякую',
-                             reply_markup=(await addBaseCommands()))
-
-        await updateUserCache(user=message.from_user.id, value={'user': user.model_dump_json()})
-    else:
-        await message.answer(text=f'{message.from_user.first_name} це не ваш номер')
-
-    await message.answer(text=f'Повторіть спробу запису на курс', reply_markup=await addDetailsCommands())

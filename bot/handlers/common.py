@@ -1,10 +1,12 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
 
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command, CommandStart, StateFilter
+from aiogram.filters import Command, CommandStart
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from bot.handlers.utils import addBaseCommands
+from bot.handlers.utils import addBaseCommands, updateUserCache
+from bot.serviceObjects import UserMng, UserIn
 
 router = Router()
 
@@ -13,10 +15,35 @@ router = Router()
 async def cmdStart(message: Message, state: FSMContext) -> None:
     # # Если поступила данная команда, то сбрасываем предыдущее состояние
     await state.clear()
-    await message.answer(text=f'{message.from_user.first_name} привіт, почнемо спілкування!',
-                         reply_markup=await addBaseCommands())
+    user = await UserMng().get(userMessengerId=message.from_user.id, noneable=True)
+    if user is None:
+        kbButton = [KeyboardButton(text='Надіслати контакт', request_contact=True)]
+        reply_markup = ReplyKeyboardMarkup(keyboard=[kbButton], resize_keyboard=True, one_time_keyboard=True)
+        await message.answer(text='Уявіть, натисніть кнопку надіслати контакт', reply_markup=reply_markup)
+    else:
+        await message.answer(text=f'{message.from_user.first_name} привіт, почнемо спілкування!',
+                             reply_markup=await addBaseCommands())
 
 
 @router.message(Command("help"))
-async def cmdCancel(message: Message, state: FSMContext) -> None:
+async def cmdCancel(message: Message) -> None:
     await message.answer('Якщо раптом зникли кнопки, то натисніть на цю іконку &#127899;')
+
+
+@router.message(F.contact)
+async def cmdSetContact(message: Message) -> None:
+    contact = message.contact
+    if contact is not None and message.from_user.id == contact.user_id:
+        phone = contact.phone_number.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ',
+                                                                                                                 '')
+        user = await UserMng().first(phone=phone)
+        if user is None:
+            user = await UserMng().create(
+                UserIn(firstName=contact.first_name, phone=phone, messengerId=contact.user_id))
+
+        await message.answer(text=f'{message.from_user.first_name} номер отриманий, дякую',
+                             reply_markup=(await addBaseCommands()))
+
+        await updateUserCache(user=message.from_user.id, value={'user': user.model_dump()})
+    else:
+        await message.answer(text=f'{message.from_user.first_name} це не ваш номер')

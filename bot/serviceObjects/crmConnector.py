@@ -62,20 +62,3 @@ class SenderOrder(Sender):
 
         return await send(base_url=settings.CRM_URL, url=f'/handler/', requestType=RequestTypes.POST,
                           headers=headers, dataDict=data)
-
-# https://ifit.salesdrive.me/handler/
-# {
-#     "form": "iXmB7BXrjCpPh9VTdN3mhPYwc1dSnVh_McN2nSHmyDIVTwpRKmQUiYxP",
-#     "getResultData": "0",
-#     "organizationId": "1",
-#     "products": [
-#         {
-#             "id": "id_1"
-#         }
-#     ],
-#     "comment": "my test from site",
-#     "fName": "test",
-#     "phone": "+380502250507",
-#     "email": "mail@mail.com"
-#
-# }
