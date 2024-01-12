@@ -13,9 +13,9 @@ class CourseBase(BaseModel):
     name: str
     productUid: UUID
     price: int = 0
-    descriptions: str | None = ''
-    exam: str | None = ''
-    location: str | None = ''
+    descriptions: str | None = None
+    exam: str | None = None
+    location: str | None = None
     crmId: str
 
 
