@@ -69,10 +69,10 @@ class ServiceObjectBase(metaclass=ABCMeta):
     async def _getObjPK(self, obj: BaseModel | BaseTable) -> dict:
         return {k: getattr(obj, k) for k in self.pkey if hasattr(obj, k)}
 
-    async def _get(self, objectDB=None, noneable=False, **kwargs) -> None:
+    async def _get(self, objectDB=None, **kwargs) -> None:
         if objectDB is None:
             objectDB = await self.ClsDB.get(**{k: v for k, v in kwargs.items() if k in self.pkey})
-            if objectDB is None and not noneable:
+            if objectDB is None:
                 raise LocalException(status=404, location=__name__,
                                      message=f'object not found ({"" if self.ClsDB is None else self.ClsDB.__name__})',
                                      type=str(self))
@@ -208,9 +208,9 @@ class ServiceObjectBase(metaclass=ABCMeta):
 
         return result
 
-    async def get(self, objectDB=None, queryParams: QueryParamFields = None, noneable=False, **kwargs):
+    async def get(self, objectDB=None, queryParams: QueryParamFields = None, **kwargs):
         await self.commonHandler(queryParams=queryParams)
-        await self._get(objectDB, noneable=noneable, **kwargs)
+        await self._get(objectDB, **kwargs)
         return await self._receiveResult()
 
     async def getList(self, queryParams: QueryParamFields = None, query: select = None, order_by: dict | None = None,

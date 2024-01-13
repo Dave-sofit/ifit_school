@@ -15,7 +15,7 @@ router = Router()
 async def cmdStart(message: Message, state: FSMContext) -> None:
     # # Если поступила данная команда, то сбрасываем предыдущее состояние
     await state.clear()
-    user = await UserMng().get(userMessengerId=message.from_user.id, noneable=True)
+    user = await UserMng().first(data={'messengerId': message.from_user.id})
     if user is None:
         kbButton = [KeyboardButton(text='Надіслати контакт', request_contact=True)]
         reply_markup = ReplyKeyboardMarkup(keyboard=[kbButton], resize_keyboard=True, one_time_keyboard=True)
