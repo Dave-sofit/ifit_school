@@ -242,21 +242,15 @@ async def run():
     coursesSchedule = list()
     # Інструктор групових програм EQF-3
     coursesSchedule.append(
-        {'courseUid': UUID("221abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
-    coursesSchedule.append(
         {'courseUid': UUID("221abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
         {'courseUid': UUID("221abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=5, day=11)})
 
     coursesSchedule.append(
-        {'courseUid': UUID("222abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
-    coursesSchedule.append(
         {'courseUid': UUID("222abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
         {'courseUid': UUID("222abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=5, day=11)})
 
-    coursesSchedule.append(
-        {'courseUid': UUID("223abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
     coursesSchedule.append(
         {'courseUid': UUID("223abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
@@ -264,21 +258,15 @@ async def run():
 
     # Інструктор тренажерного залу EQF-3
     coursesSchedule.append(
-        {'courseUid': UUID("224abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
-    coursesSchedule.append(
         {'courseUid': UUID("224abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
         {'courseUid': UUID("224abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=5, day=11)})
 
     coursesSchedule.append(
-        {'courseUid': UUID("225abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
-    coursesSchedule.append(
         {'courseUid': UUID("225abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
         {'courseUid': UUID("225abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=5, day=11)})
 
-    coursesSchedule.append(
-        {'courseUid': UUID("226abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
 
     coursesSchedule.append(
         {'courseUid': UUID("227abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
@@ -290,8 +278,6 @@ async def run():
     coursesSchedule.append(
         {'courseUid': UUID("228abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=4, day=6)})
 
-    coursesSchedule.append(
-        {'courseUid': UUID("229abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=20)})
     coursesSchedule.append(
         {'courseUid': UUID("229abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=2)})
     coursesSchedule.append(
@@ -305,8 +291,6 @@ async def run():
         {'courseUid': UUID("231abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=9)})
 
     # Дієтолог-нутріціолог
-    coursesSchedule.append(
-        {'courseUid': UUID("232abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=1, day=13)})
     coursesSchedule.append(
         {'courseUid': UUID("232abb13-8271-abf1-ada2-002934865559"), 'startDate': datetime(year=2024, month=3, day=30)})
 
