@@ -36,7 +36,7 @@ async def cmdSetContact(message: Message) -> None:
     if contact is not None and message.from_user.id == contact.user_id:
         phone = contact.phone_number.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ',
                                                                                                                  '')
-        user = await UserMng().first(phone=phone)
+        user = await UserMng().first(** {'data': {'phone': phone}})
         if user is None:
             user = await UserMng().create(
                 UserIn(firstName=contact.first_name, phone=phone, messengerId=contact.user_id))
