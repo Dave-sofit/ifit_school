@@ -7,10 +7,6 @@ envPath = path.normpath(path.dirname(__file__) + sep + pardir) + sep + '.env'
 
 class Settings(BaseSettings):
     DATABASE_URI: str
-    SOFIT_HOST: str
-    SOFIT_USERNAME: str
-    SOFIT_PASSWORD: str
-    GIT_URL: str
     BOT_TOKEN: str
     BOT_ADMIN_ID: str
     REDIS_URI: str

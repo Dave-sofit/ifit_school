@@ -1,5 +1,4 @@
 import logging
-import locale
 
 from logging.handlers import TimedRotatingFileHandler
 
@@ -11,6 +10,7 @@ from .common.dependencies import setSession
 
 from bot.handlers.common import router as commonRouter
 from bot.handlers.courses import router as coursesRouter
+from bot.handlers.admin import router as adminRouter
 
 logHandler = TimedRotatingFileHandler(filename='logs/bot.log', when='D', interval=1, backupCount=0)
 logFormatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
@@ -27,8 +27,7 @@ async def main():
     dp = Dispatcher(storage=storage)
     dp.include_routers(commonRouter)
     dp.include_routers(coursesRouter)
-
-    locale.setlocale(locale.LC_ALL, locale="ru_RU.UTF-8")
+    dp.include_routers(adminRouter)
 
     try:
         await dp.start_polling(bot)

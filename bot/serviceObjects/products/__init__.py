@@ -8,7 +8,7 @@ class ProductBase(BaseModel):
     descriptions: str
     content: str
     certificate: str
-    order: int = 0
+    order: int
 
 
 class ProductIn(ProductBase):

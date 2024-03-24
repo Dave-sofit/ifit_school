@@ -22,7 +22,7 @@ async def cmdStart(message: Message, state: FSMContext) -> None:
         await message.answer(text='Уявіть, натисніть кнопку надіслати контакт', reply_markup=reply_markup)
     else:
         await message.answer(text=f'{message.from_user.first_name} привіт, почнемо спілкування!',
-                             reply_markup=await addBaseCommands())
+                             reply_markup=await addBaseCommands(messengerId=message.from_user.id))
 
 
 @router.message(Command("help"))
@@ -42,7 +42,7 @@ async def cmdSetContact(message: Message) -> None:
                 UserIn(firstName=contact.first_name, phone=phone, messengerId=contact.user_id))
 
         await message.answer(text=f'{message.from_user.first_name} номер отриманий, дякую',
-                             reply_markup=(await addBaseCommands()))
+                             reply_markup=(await addBaseCommands(messengerId=message.from_user.id)))
 
         await updateUserCache(user=message.from_user.id, value={'user': user.model_dump()})
     else:

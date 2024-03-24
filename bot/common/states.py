@@ -5,6 +5,17 @@ class AuthState(StatesGroup):
     waitingContact = State()
 
 
+class ControlState(StatesGroup):
+    waitingControlObjectType = State()
+    waitingControlObject = State()
+    waitingAttribute = State()
+    waitingDescriptions = State()
+
+
+class EditingState(StatesGroup):
+    waitingData = State()
+
+
 class InformingState(StatesGroup):
     waitingProduct = State()
     waitingAction = State()

@@ -46,6 +46,12 @@ class Sender:
         pass
 
 
+class Getter:
+    @classmethod
+    async def getFromCrm(cls, obj: Any):
+        pass
+
+
 class SenderOrder(Sender):
     @classmethod
     async def sendToCrm(cls, obj: Order):
@@ -62,3 +68,9 @@ class SenderOrder(Sender):
 
         return await send(base_url=settings.CRM_URL, url=f'/handler/', requestType=RequestTypes.POST,
                           headers=headers, dataDict=data)
+
+
+class GetterOrder(Getter):
+    @classmethod
+    async def getFromCrm(cls, obj: Any):
+        pass
