@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, CommandStart
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from bot.handlers.utils import addBaseCommands, updateUserCache
+from bot.handlers.utils import addBaseCommands, updateCache
 from bot.serviceObjects import UserMng, UserIn
 
 router = Router()
@@ -44,6 +44,6 @@ async def cmdSetContact(message: Message) -> None:
         await message.answer(text=f'{message.from_user.first_name} номер отриманий, дякую',
                              reply_markup=(await addBaseCommands(messengerId=message.from_user.id)))
 
-        await updateUserCache(user=message.from_user.id, value={'user': user.model_dump()})
+        await updateCache(key=f'{message.from_user.id}_user', value=user.model_dump())
     else:
         await message.answer(text=f'{message.from_user.first_name} це не ваш номер')

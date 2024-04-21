@@ -1,4 +1,5 @@
 from json import loads, dumps
+from typing import Any
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
@@ -31,26 +32,26 @@ async def returnBack(message: Message, state: FSMContext):
     await message.answer(text='Вибери дію', reply_markup=await addBaseCommands(messengerId=message.from_user.id))
 
 
-async def updateUserCache(user, value: dict) -> None:
-    userCache = await cache.get(user)
-    if userCache is None:
-        userCacheDict = {}
+async def updateCache(key: str, value: Any) -> None:
+    data = await cache.get(key)
+    if data is None:
+        dataDict = {}
     else:
-        userCacheDict = loads(userCache)
+        dataDict = loads(data)
 
-    userCacheDict.update(value)
-    await cache.set(user, dumps(userCacheDict))
+    dataDict.update(value)
+    await cache.set(key, dumps(dataDict))
 
 
 async def setProductInCache(message: Message) -> dict | None:
     product = None
-    userCache = await cache.get(message.from_user.id)
+    userCache = await cache.get(f'{message.from_user.id}_productsDict')
     if userCache is not None and len(message.text) > 2:
-        productsDict = loads(userCache).get('productsDict')
+        productsDict = loads(userCache)
         if productsDict is not None:
             value = productsDict.get(message.text[:2])
             if value is not None:
                 product = loads(value)
-                await updateUserCache(user=message.from_user.id, value={'product': product})
+                await updateCache(key=f'{message.from_user.id}_product', value=product)
 
     return product

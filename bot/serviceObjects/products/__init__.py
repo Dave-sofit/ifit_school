@@ -15,6 +15,10 @@ class ProductIn(ProductBase):
     pass
 
 
+class ProductUpdate(ProductIn, UuidBase):
+    pass
+
+
 class ProductOut(ProductBase, UuidBase):
     class Config:
         from_attributes = True
@@ -29,7 +33,7 @@ class ProductData(BaseModel):
     descriptions: str
     content: str
     certificate: str
-    order: str
+    order: int
 
 
 class ProductDataT(BaseModel):

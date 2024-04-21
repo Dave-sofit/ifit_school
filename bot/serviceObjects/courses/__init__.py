@@ -17,10 +17,16 @@ class CourseBase(BaseModel):
     exam: str | None = None
     location: str | None = None
     crmId: str
+    employeeUids: List[UUID] | None
+    order: int
 
 
 class CourseIn(CourseBase):
-    employeeUids: List[UUID] | None
+    pass
+
+
+class CourseUpdate(CourseIn, UuidBase):
+    pass
 
 
 class CourseOut(CourseBase, UuidBase):
@@ -43,6 +49,7 @@ class CourseData(BaseModel):
     exam: str
     location: str
     crmId: str
+    order: int
 
 
 class CourseDataT(BaseModel):

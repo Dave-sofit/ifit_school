@@ -1,4 +1,7 @@
 from typing import List
+from datetime import datetime
+
+from sqlalchemy import select
 
 from bot.models import Course as CourseDB, CourseSchedule as CourseScheduleDB, CourseApplication as CourseApplicationDB
 from bot.serviceObjects.courses import CourseIn, CourseOut, CourseSchemaDB, CourseQueryParamFields as QueryParamFields
@@ -37,7 +40,9 @@ class CourseScheduleMng(ServiceObjectBase):
 
     async def getList(self, queryParams: CourseScheduleQueryParamFields = None, order_by: dict = None, **kwargs) -> \
             List[CourseScheduleOut]:
-        return await super().getList(queryParams=queryParams, order_by=order_by, **kwargs)
+
+        query = select(self.ClsDB).where(self.ClsDB.startDate > datetime.utcnow())
+        return await super().getList(queryParams=queryParams, query=query, order_by=order_by, **kwargs)
 
 
 class CourseApplicationMng(ServiceObjectBase):

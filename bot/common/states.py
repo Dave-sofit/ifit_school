@@ -10,6 +10,15 @@ class ControlState(StatesGroup):
     waitingControlObject = State()
     waitingAttribute = State()
     waitingDescriptions = State()
+    waitingContent = State()
+    waitingCertificate = State()
+    waitingPlace = State()
+    waitingCourseAttribute = State()
+    waitingCourseDescriptions = State()
+    waitingCoursePrice = State()
+    waitingCourseExam = State()
+    waitingCourseLocation = State()
+    waitingCourseDate = State()
 
 
 class EditingState(StatesGroup):
