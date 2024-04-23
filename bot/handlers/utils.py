@@ -15,7 +15,7 @@ async def addBaseCommands(messengerId: int) -> ReplyKeyboardMarkup:
     builder.add(KeyboardButton(text='Базові курси навчання'))
     builder.add(KeyboardButton(text='Семінари та майстер-класи'))
     builder.add(KeyboardButton(text='Мої дані'))
-    if messengerId == int(settings.BOT_ADMIN_ID):
+    if messengerId == int(settings.BOT_ADMIN_ID) or messengerId == int(settings.BOT_ADMIN_ID2):
         builder.add(KeyboardButton(text='Управління'))
     builder.adjust(2)
 

@@ -81,12 +81,23 @@ async def updateCourse(message: Message, state: FSMContext, updateValue: dict) -
         await setCourse(message=message, state=state)
 
 
-async def commandsUpdateValue(message: Message, state: FSMContext, newState: State) -> None:
+async def commandsUpdateValue(message: Message, state: FSMContext, newState: State, attrName: str) -> None:
+    if newState == ControlState.waitingCourseDescriptions:
+        value = await cache.get(f'{message.from_user.id}_course')
+    else:
+        value = await cache.get(f'{message.from_user.id}_product')
+
+    if value is not None:
+        product = loads(value)
+        attr = product.get(attrName)
+    else:
+        attr = ''
+
     builder = ReplyKeyboardBuilder()
     builder.add(KeyboardButton(text='Скасувати'))
     builder.adjust(2)
     await state.set_state(newState)
-    await message.answer(text='Введіть нове значення',
+    await message.answer(text=f'Поточне значення:\n{attr}\n\nВведіть нове значення',
                          reply_markup=builder.as_markup(resize_keyboard=True, one_time_keyboard=True))
 
 
@@ -161,17 +172,19 @@ async def cmdSetProduct(message: Message, state: FSMContext) -> None:
 
 @router.message(ControlState.waitingAttribute, F.text == 'Опис курсу')
 async def cmdDescription(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingDescriptions)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingDescriptions,
+                              attrName='descriptions')
 
 
 @router.message(ControlState.waitingAttribute, F.text == 'Програма курсу')
 async def cmdContent(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingContent)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingContent, attrName='content')
 
 
 @router.message(ControlState.waitingAttribute, F.text == 'Сертифікат')
 async def cmdCertificate(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCertificate)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCertificate,
+                              attrName='certificate')
 
 
 @router.message(ControlState.waitingAttribute, F.text == 'Як проходить навчання')
@@ -226,17 +239,19 @@ async def cmdCancel(message: Message, state: FSMContext) -> None:
 
 @router.message(ControlState.waitingCourseAttribute, F.text == 'Навчальний процес')
 async def cmdDescription(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseDescriptions)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseDescriptions,
+                              attrName='descriptions')
 
 
 @router.message(ControlState.waitingCourseAttribute, F.text == 'Iспит та акредитація')
 async def cmdContent(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseExam)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseExam, attrName='exam')
 
 
 @router.message(ControlState.waitingCourseAttribute, F.text == 'Адреса')
 async def cmdCertificate(message: Message, state: FSMContext) -> None:
-    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseLocation)
+    await commandsUpdateValue(message=message, state=state, newState=ControlState.waitingCourseLocation,
+                              attrName='location')
 
 
 @router.message(ControlState.waitingCourseAttribute, F.text == 'Розклад')

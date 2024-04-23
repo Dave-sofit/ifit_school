@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     DATABASE_URI: str
     BOT_TOKEN: str
     BOT_ADMIN_ID: str
+    BOT_ADMIN_ID2: str
     REDIS_URI: str
     REDIS_PASSWORD: str
     DEFAULT_CONTENT_LANGUAGE: str
