@@ -82,7 +82,8 @@ async def updateCourse(message: Message, state: FSMContext, updateValue: dict) -
 
 
 async def commandsUpdateValue(message: Message, state: FSMContext, newState: State, attrName: str) -> None:
-    if newState == ControlState.waitingCourseDescriptions:
+    if (newState == ControlState.waitingCourseDescriptions
+            or newState == ControlState.waitingCourseExam or newState == ControlState.waitingCourseLocation):
         value = await cache.get(f'{message.from_user.id}_course')
     else:
         value = await cache.get(f'{message.from_user.id}_product')
@@ -287,13 +288,13 @@ async def cmdUpdateDescription(message: Message, state: FSMContext) -> None:
 
 
 @router.message(ControlState.waitingCourseExam)
-async def cmdUpdateDescription(message: Message, state: FSMContext) -> None:
+async def cmdUpdateExam(message: Message, state: FSMContext) -> None:
     updateValue = {'exam': message.html_text}
     await updateCourse(message=message, state=state, updateValue=updateValue)
 
 
 @router.message(ControlState.waitingCourseLocation)
-async def cmdUpdateDescription(message: Message, state: FSMContext) -> None:
+async def cmdUpdateLocation(message: Message, state: FSMContext) -> None:
     updateValue = {'location': message.html_text}
     await updateCourse(message=message, state=state, updateValue=updateValue)
 
