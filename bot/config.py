@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     DEFAULT_CONTENT_LANGUAGE: str
     CRM_URL: str
     CRM_TOKEN: str
+    CRM_PUBLIC_KEY: str
 
     class Config:
         env_file = envPath

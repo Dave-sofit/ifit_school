@@ -2,10 +2,11 @@ from json import dumps
 from datetime import datetime
 from typing import Any
 
+from xmltodict import parse as parseXmlToDict
 from httpx import AsyncClient, RequestError, Response
 
 from bot.common.enums import RequestTypes
-from bot.config import settings
+from bot.config import settings, Settings
 from bot.serviceObjects.users import UserOut
 from bot.serviceObjects.courses import CourseOut
 
@@ -48,7 +49,7 @@ class Sender:
 
 class Getter:
     @classmethod
-    async def getFromCrm(cls, obj: Any):
+    async def getFromCrm(cls):
         pass
 
 
@@ -72,5 +73,13 @@ class SenderOrder(Sender):
 
 class GetterOrder(Getter):
     @classmethod
-    async def getFromCrm(cls, obj: Any):
+    async def getFromCrm(cls):
         pass
+
+
+class GetterProducts(Getter):
+    @classmethod
+    async def getFromCrm(cls):
+        result = await send(base_url=settings.CRM_URL,
+                            url=f'/export/yml/export.yml?publicKey={settings.CRM_PUBLIC_KEY}')
+        return parseXmlToDict(result.text)

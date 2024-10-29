@@ -11,6 +11,7 @@ from bot.common import ControlState
 from bot.handlers.utils import updateCache, returnBack, setProductInCache
 from bot.serviceObjects import ProductMng, ProductUpdate, CourseMng, CourseUpdate, CourseScheduleMng, CourseScheduleIn
 from bot.serviceObjects import SimpleCalendar, SimpleCalendarCallback
+from bot.serviceObjects.crmConnector import GetterProducts
 from bot.engine import cache
 
 router = Router()
@@ -38,6 +39,7 @@ async def getProducts(message: Message, state: FSMContext) -> Message:
         productsDict.update({f'{product.order}.': product_json})
 
     await updateCache(key=f'{message.from_user.id}_productsDict', value=productsDict)
+    builder.add(KeyboardButton(text='Оновити ціни курсів'))
     builder.add(KeyboardButton(text='Повернутися назад'))
     builder.adjust(2)
     await state.set_state(ControlState.waitingControlObject)
@@ -68,6 +70,24 @@ async def updateProduct(message: Message, state: FSMContext, updateValue: dict) 
         await updateCache(key=f'{message.from_user.id}_product', value=product)
         await message.answer(text='Дані оновлено')
         await setProduct(message=message, state=state)
+
+
+async def updateCoursesPrice(message: Message, state: FSMContext) -> Message:
+    catalogCRM = await GetterProducts.getFromCrm()
+    coursesCRM = catalogCRM.get('yml_catalog').get('shop').get('offers').get('offer')
+    if coursesCRM:
+        coursesPrice = {}
+        for courseCRM in coursesCRM:
+            coursesPrice.update({courseCRM.get('@id'): courseCRM.get('price')})
+
+        courses = await CourseMng().getList()
+        for course in courses:
+            price = coursesPrice.get(course.crmId)
+            if price and price != course.price:
+                course.price = price
+                await CourseMng().update(CourseUpdate(**course.model_dump()))
+
+    return await message.answer(text='Ціни успішно оновлено')
 
 
 async def updateCourse(message: Message, state: FSMContext, updateValue: dict) -> None:
@@ -152,6 +172,11 @@ async def cmdReturnBack(message: Message, state: FSMContext) -> None:
 @router.message(ControlState.waitingControlObject, F.text == 'Повернутися назад')
 async def cmdReturnBack(message: Message, state: FSMContext) -> None:
     await setBaseCommand(message=message, state=state)
+
+
+@router.message(ControlState.waitingControlObject, F.text == 'Оновити ціни курсів')
+async def cmdReturnBack(message: Message, state: FSMContext) -> None:
+    await updateCoursesPrice(message=message, state=state)
 
 
 @router.message(ControlState.waitingControlObjectType, F.text == 'Редагування курсів')
